@@ -1,0 +1,36 @@
+env:
+  AWS_REGION: us-east-2
+  ECR_REPOSITORY: savantly
+  IMAGE_TAG: $(cat VERSION)
+  CLUSTER_NAME: production
+  DEPLOYMENT_NAME: wordpress
+  NAMESPACE: default
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Version to deploy"
+        required: true
+        default: "latest"
+        type: string
+name: release
+jobs:
+  jobName:
+    name: Update deploy
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Rollout deployment
+        uses: ianbelcher/eks-kubectl-action@master
+        with:
+          aws_region: ${{ env.AWS_REGION }}
+          cluster_name: ${{ env.CLUSTER_NAME }}
+          args: rollout restart deployment ${{ env.DEPLOYMENT_NAME }} -n ${{ env.NAMESPACE }}

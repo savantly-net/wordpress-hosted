@@ -1,0 +1,46 @@
+version: "3.9"
+services:
+  webapp:
+    image: savantly/wordpress:6.6.1-apache
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8080:80"
+    volumes:
+      - ./plugins:/var/www/html/wp-content/plugins
+      - ./themes:/var/www/html/wp-content/themes
+      - ./uploads:/var/www/html/wp-content/uploads
+    environment:
+      SERVER_NAME: localhost
+      WORDPRESS_CONFIG_EXTRA: |
+        define('WP_CACHE', false );
+        define('WP_SITEURL', 'http://localhost:8080');
+        define('WP_HOME', 'http://localhost:8080');
+        define('WP_MEMORY_LIMIT', '512M');
+      WORDPRESS_DB_NAME: wordpress
+      WORDPRESS_DB_USER: wordpress
+      WORDPRESS_DB_PASSWORD: wordpress
+      WORDPRESS_DB_HOST: db:3306
+      WORDPRESS_AUTH_KEY: 123
+      WORDPRESS_SECURE_AUTH_KEY: 123
+      WORDPRESS_LOGGED_IN_KEY: 123
+      WORDPRESS_NONCE_KEY: 123
+      WORDPRESS_AUTH_SALT: 123
+      WORDPRESS_SECURE_AUTH_SALT: 123
+      WORDPRESS_LOGGED_IN_SALT: 123
+      WORDPRESS_NONCE_SALT: 123
+    depends_on:
+      - db
+
+  db:
+    image: mysql:8.0
+    ports:
+      - "3306:3306"
+    volumes:
+      - ./db:/var/lib/mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: wordpress
+      MYSQL_USER: wordpress
+      MYSQL_PASSWORD: wordpress

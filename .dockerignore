@@ -1,0 +1,14 @@
+# ignore node dependency directories
+node_modules/
+
+# ignore log files and databases
+db
+*.log
+*.sql
+*.sqlite
+.env
+
+**/.DS_Store
+.DS_Store
+
+**/*.bak
