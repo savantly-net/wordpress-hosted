@@ -8,5 +8,5 @@ RUN set -eux; \
     cp -s wp-config-docker.php wp-config.php
 
 
-COPY plugins/ ./wp-content/plugins/
-COPY themes/ ./wp-content/themes/
+COPY --chown=www-data:www-data plugins/ ./wp-content/plugins/
+COPY --chown=www-data:www-data themes/ ./wp-content/themes/
