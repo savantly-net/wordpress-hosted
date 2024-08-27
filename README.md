@@ -33,5 +33,6 @@ make dev
 
 ## GitHub Actions
 
+1. Enable GitHub Actions in the repository, by removing the `.` in the file names in the `.github/workflows` directory
 2. Replace the variables in the GitHub Actions workflow file `.github/workflows/main.yml` with your own values
 3. Replace the variables in the GitHub Actions workflow file `.github/workflows/release.yml` with your own values
