@@ -2,6 +2,13 @@
 
 Template repository for Savantly Wordpress Enterprise hosting
 
+Savantly provide a container based Wordpress hosting solution that is designed to be scalable, secure and easy to manage.  
+This repository is a template for creating a custom Wordpress hosting solution that can be deployed to the Savantly platform.
+
+Feel free to fork this repository and customize it to your needs.
+
+Contact us at [Savantly](https://savantly.net) for more information.
+
 ## TLDR;
 
 Start up the local development environment with the following command:
