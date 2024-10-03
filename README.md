@@ -1,5 +1,11 @@
 # wordpress-hosted
 
+---
+
+These instructions should be updated to reflect the current state of the project.
+
+---
+
 Template repository for Savantly Wordpress Enterprise hosting
 
 Savantly provide a container based Wordpress hosting solution that is designed to be scalable, secure and easy to manage.  

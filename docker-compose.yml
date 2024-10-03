@@ -1,16 +1,17 @@
 version: "3.9"
 services:
   webapp:
-    image: savantly/wordpress:6.6.1-apache
+    image: savantly/wordpress:6.6-php8.1-fpm
     build:
       context: .
       dockerfile: Dockerfile
     ports:
       - "8080:80"
     volumes:
-      - ./plugins:/var/www/html/wp-content/plugins
-      - ./themes:/var/www/html/wp-content/themes
-      - ./uploads:/var/www/html/wp-content/uploads
+      - ./plugins:/usr/src/wordpress/wp-content/plugins
+      - ./themes:/usr/src/wordpress/wp-content/themes
+      - ./uploads:/usr/src/wordpress/wp-content/uploads
+      - ./test/info.php:/usr/src/wordpress/info.php
     environment:
       SERVER_NAME: localhost
       WORDPRESS_CONFIG_EXTRA: |
