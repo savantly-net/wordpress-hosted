@@ -9,8 +9,10 @@ BASE_IMAGE := "savantly/wordpress"
 BASE_TAG := "6.6.1-php8.1-fpm"
 
 VERSION := $(shell cat VERSION)
+# Strip -dev from version
+VERSION := $(shell echo $(VERSION) | sed 's/-dev//')
 TAGGED_VERSION := $(VERSION)
-NEXT_VERSION := $(shell echo $(VERSION) | awk -F. '{$$NF = $$NF + 1;} 1' | sed 's/ /./g')
+NEXT_VERSION := $(shell echo $(VERSION) | awk -F. '{$$NF = $$NF + 1;} 1' | sed 's/ /./g')-dev
 
 # IMAGE_NAME - from project.mk
 IMAGE_TAG := "$(IMAGE_NAME):$(BASE_TAG)-$(TAGGED_VERSION)"
@@ -55,7 +57,6 @@ ensure-git-repo-pristine:
 	@echo "Ensuring git repo is pristine"
 	@[[ $(shell git status --porcelain=v1 2>/dev/null | wc -l) -gt 0 ]] && echo "Git repo is not pristine" && exit 1 || echo "Git repo is pristine"
 
-
 .PHONY: bump-version
 bump-version:
 	@echo "Bumping version to $(NEXT_VERSION)"
@@ -63,28 +64,23 @@ bump-version:
 	git add VERSION
 	git commit -m "Published $(VERSION) and prepared for $(NEXT_VERSION)"
 
-
-.PHONY: push
-push: ensure-git-repo-pristine 
-	@echo "Building..."
-	@docker buildx build --platform=linux/amd64,linux/arm64 \
-	--build-arg="BASE_IMAGE=$(BASE_IMAGE)" \
-	--build-arg="BASE_TAG=$(BASE_TAG)" \
-	--push -t $(IMAGE_TAG) -t $(IMAGE_TAG_LATEST) .
-	@echo "Done!"
-
-
-.PHONY: release
-release: push bump-version 
+.PHONY: tag-version
+tag-version:
 	@echo "Preparing release..."
 	@echo "Version: $(VERSION)"
-	@echo "BASE_IMAGE: $(BASE_IMAGE)"
-	@echo "BASE_TAG: $(BASE_TAG)"
 	@echo "Commit: $(GIT_COMMIT)"
 	@echo "Image Tag: $(IMAGE_TAG)"
+	@echo $(VERSION) > VERSION
+	git add VERSION
+	git commit -m "Published $(VERSION)"
 	git tag -a $(TAGGED_VERSION) -m "Release $(VERSION)"
 	git push origin $(TAGGED_VERSION)
 	@echo "Tag $(TAGGED_VERSION) created and pushed to origin"
+
+.PHONY: release
+release: ensure-git-repo-pristine tag-version bump-version 
+	git push
+	@echo "Release $(VERSION) completed and pushed to origin"
 
 
 .PHONY: dev
@@ -133,4 +129,5 @@ pod-logs:
 reveal-cicd-creds:
 	@echo "Revealing cicd creds..."
 	@kubectl get secret cicd -n $(K8S_NAMESPACE) -o jsonpath="{.data.AWS_ACCESS_KEY_ID}" | base64 --decode
+	@echo " "
 	@kubectl get secret cicd -n $(K8S_NAMESPACE) -o jsonpath="{.data.AWS_SECRET_ACCESS_KEY}" | base64 --decode
