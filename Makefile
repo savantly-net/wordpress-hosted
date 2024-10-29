@@ -1,4 +1,4 @@
-# Makefile version 1.0
+# Makefile version 2.0
 
 # Load the project configuration
 include project.mk
